@@ -58,12 +58,12 @@ fi
 
 
 module purge
-module load rocm/5.4.2
+module load rocm-5.4.2
 
 tmp=/tmp/$USER/hpcg2-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/rochpcg_3.1.amd1_21.sif mpirun --mca pml ucx -np 2 rochpcg 336 168 672 1860
+singularity run /shared/apps/bin/rochpcg_3.1.amd1_28.sif mpirun -n 2 --mca pml ucx hpcg 352 352 352 1860
 
 rm -rf /tmp/$USER/hpcg2-$$
 

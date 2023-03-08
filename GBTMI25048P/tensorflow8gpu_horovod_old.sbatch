@@ -1,10 +1,11 @@
 #!/bin/bash
-
+ 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=3
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=64GB
-#SBATCH --gres=gpu:3
+#SBATCH --ntasks-per-node=8
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=0
+#SBATCH --gres=gpu:8
+
 #SBATCH -o %x-%N-%j.out
 #SBATCH -e %x-%N-%j.err
 
@@ -58,9 +59,12 @@ fi
 
 
 module purge
-module load rocm-5.4.2
+module load rocm/5.4.2
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/rochpcg_3.1.amd1_28.sif mpirun -np 3 hpcg 280 280 280 1860
+echo "Tensorflow Horovod"
+
+echo "8 GPU"
+singularity run --env PYTHONPATH=/root/.local/lib/python3.9/site-packages /shared/apps/bin/tensorflow_rocm5.2.0-tf2.9-dev2.sif /usr/local/bin/horovodrun -np 8 -H localhost:8 python3 /root/benchmarks/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --model resnet101 --batch_size 64 --variable_update horovod
