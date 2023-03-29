@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=12
 #SBATCH --mem=256GB
 #SBATCH --gres=gpu:4
 #SBATCH -o %x-%N-%j.out
@@ -60,19 +60,9 @@ fi
 module purge
 module load rocm-5.4.3
 
-tmp=/tmp/$USER/tmp-$$
+tmp=/tmp/$USER/hplai4-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/namd3_3.0a9.sif cp -r /examples ./examples-$$
+singularity run --pwd /benchmark /shared/apps/bin/hplai_1.0.0.sif mpirun -n 4 --map-by node:PE=1 hpl-ai -P 2 -B 2560 -N 235520
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 jac/jac.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
-
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 apoa1/apoa1.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
-
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 f1atpase/f1atpase.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3 
-
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 stmv/stmv.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
-
-cp -r ./examples-$$   $PWD/gpu4-$$-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-
-rm -rf examples-$$/
+rm -rf /tmp/$USER/hplai4-$$

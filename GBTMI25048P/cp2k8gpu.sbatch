@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=256GB
-#SBATCH --gres=gpu:4
+#SBATCH --ntasks-per-node=8
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=0
+#SBATCH --gres=gpu:8
 #SBATCH -o %x-%N-%j.out
 #SBATCH -e %x-%N-%j.err
 
@@ -57,22 +57,26 @@ elif [[ $(echo $SLURM_JOB_PARTITION | grep -i rocky9) = *Rocky9* ]]; then
 fi
 
 
-module purge
 module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
+
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/namd3_3.0a9.sif cp -r /examples ./examples-$$
+singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchmarks $tmp
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 jac/jac.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
+# Run H2O-DFT-LS-NREP2 Test
+mkdir -p $tmp/H2O-DFT-LS-NREP2-8GPU-$$
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-8GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI250 --rank-stride 8 --omp-thread-count 8 --ranks 12 --gpu-count 8 --cpu-count 96 --output /tmp/H2O-DFT-LS-NREP2-8GPU
+cp -r $tmp/H2O-DFT-LS-NREP2-8GPU-$$ `pwd`/
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 apoa1/apoa1.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
+# Run 32-H2O-RPA test
+rm -rf $tmp/benchmarks/logs
+mkdir -p $tmp/32-H2O-RPA-8GPU-$$
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-8GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI250 --rank-stride 8 --omp-thread-count 8 --ranks 12 --gpu-count 8 --cpu-count 96 --output /tmp/32-H2O-RPA-8GPU
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 f1atpase/f1atpase.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3 
+cp -r $tmp/32-H2O-RPA-8GPU-$$ `pwd`/
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 stmv/stmv.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1,2,3
+# Cleanup the benchmark data which was copied
+rm -rf $tmp
 
-cp -r ./examples-$$   $PWD/gpu4-$$-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-
-rm -rf examples-$$/
