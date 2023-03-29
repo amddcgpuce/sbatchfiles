@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=48
-#SBATCH --cpus-per-task=2
+#SBATCH --ntasks-per-node=16
+#SBATCH --cpus-per-task=6
 #SBATCH --mem=0
 #SBATCH --gres=gpu:8
 #SBATCH -o %x-%N-%j.err
@@ -63,7 +63,7 @@ tmp=/tmp/$USER/gpu8-3d-$$
 mkdir -p $tmp
 
 #===== 8GPU, 3D Benchmark
-singularity run --bind /shareddata/relionv4/relion_benchmark:/dataset:ro --pwd /benchmark /shared/apps/bin/relion_4.0_25.sif run-benchmark --class 3d -g 8 -n 9 -j 4 -p 10 --iters 25 -i /dataset -o /tmp/$USER/gpu8-3d-$$
+singularity run --bind /shareddata/relionv4/relion_benchmark:/dataset:ro --pwd /benchmark /shared/apps/bin/relion_4.0_25.sif run-benchmark --class 3d -g 8 -n 16 -j 8 -p 10 --iters 25 -i /dataset -o /tmp/$USER/gpu8-3d-$$
 
 # Save logile
 cp /tmp/$USER/gpu8-3d-$$/log.txt ${PWD}/log.txt-relion-gpu8-3d-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
