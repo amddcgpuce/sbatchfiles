@@ -64,5 +64,5 @@ mkdir -p $tmp
 echo "Tensorflow Horovod"
 
 echo "2 GPU"
-singularity run --env PYTHONPATH=/root/.local/lib/python3.9/site-packages /shared/apps/bin/tensorflow_rocm5.4-tf2.9-dev.sif /usr/local/bin/horovodrun -np 2 -H localhost:2 python3 /root/benchmarks/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --model resnet101 --batch_size 64 --variable_update horovod
+singularity run --env PYTHONPATH=/root/.local/lib/python3.9/site-packages /shared/apps/bin/tensorflow_rocm5.4-tf2.11-dev.sif /usr/local/bin/horovodrun -np 2 -H localhost:2 python3 /root/benchmarks/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --model resnet101 --batch_size 64 --variable_update horovod
 
