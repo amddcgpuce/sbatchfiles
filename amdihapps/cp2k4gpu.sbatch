@@ -58,9 +58,24 @@ fi
 
 
 module purge
-module load rocm-5.4.2/ucx-1.13.1/ompi/4.1.4
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run --writable-tmpfs --bind $(pwd):/tmp /shared/apps/bin/cp2k_8_2.sif benchmark 32-H2O-RPA --arch VEGA908 --gpu-count 4 --cpu-count 64 --omp-thread-count 4 --ranks 16 --rank-stride 4 --output /tmp/32-H2O-RPA-4GPU
+singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchmarks $tmp
+
+# Run H2O-DFT-LS-NREP2 Test
+mkdir -p $tmp/H2O-DFT-LS-NREP2-4GPU-$$
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 16 --gpu-count 4 --cpu-count 128 --output /tmp/H2O-DFT-LS-NREP2-4GPU
+cp -r $tmp/H2O-DFT-LS-NREP2-4GPU-$$ `pwd`/
+
+# Run 32-H2O-RPA test
+rm -rf $tmp/benchmarks/logs
+mkdir -p $tmp/32-H2O-RPA-4GPU-$$
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 16 --gpu-count 4 --cpu-count 128 --output /tmp/32-H2O-RPA-4GPU
+
+cp -r $tmp/32-H2O-RPA-4GPU-$$ `pwd`/
+
+# Cleanup the benchmark data which was copied
+rm -rf $tmp
