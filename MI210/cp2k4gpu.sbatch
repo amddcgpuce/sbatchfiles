@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=4
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=256GB
 #SBATCH --gres=gpu:4
 #SBATCH -o %x-%N-%j.out
@@ -67,14 +67,14 @@ singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchma
 
 # Run H2O-DFT-LS-NREP2 Test
 mkdir -p $tmp/H2O-DFT-LS-NREP2-4GPU-$$
-singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 12 --gpu-count 4 --cpu-count 64 --output /tmp/H2O-DFT-LS-NREP2-4GPU
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI210 --rank-stride 4 --omp-thread-count 4 --ranks 16 --gpu-count 4 --cpu-count 64 --output /tmp/H2O-DFT-LS-NREP2-4GPU
 mkdir -p `pwd`/H2O-DFT-LS-NREP2-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 cp $tmp/H2O-DFT-LS-NREP2-4GPU-$$/H2O-DFT-LS-NREP2* `pwd`/H2O-DFT-LS-NREP2-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 
 # Run 32-H2O-RPA test
 rm -rf $tmp/benchmarks/logs
 mkdir -p $tmp/32-H2O-RPA-4GPU-$$
-singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 12 --gpu-count 4 --cpu-count 64 --output /tmp/32-H2O-RPA-4GPU
+singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI210 --rank-stride 4 --omp-thread-count 4 --ranks 16 --gpu-count 4 --cpu-count 64 --output /tmp/32-H2O-RPA-4GPU
 mkdir -p `pwd`/32-H2O-RPA-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 cp $tmp/32-H2O-RPA-4GPU-$$/32-H2O-RPA* `pwd`/32-H2O-RPA-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 
