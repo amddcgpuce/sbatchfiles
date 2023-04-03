@@ -58,7 +58,7 @@ fi
 
 
 module purge
-module load rocm/5.4.2
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
@@ -66,5 +66,5 @@ mkdir -p $tmp
 echo "Tensorflow Horovod"
 
 echo "4 GPU"
-singularity run --env PYTHONPATH=/root/.local/lib/python3.9/site-packages /shared/apps/bin/tensorflow_rocm5.4-tf2.9-dev.sif /usr/local/bin/horovodrun -np 4 -H localhost:4 python3 /root/benchmarks/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --model resnet101 --batch_size 64 --variable_update horovod
+singularity run --env PYTHONPATH=/root/.local/lib/python3.9/site-packages /shared/apps/bin/tensorflow_rocm5.4-tf2.11-dev.sif /usr/local/bin/horovodrun -np 4 -H localhost:4 python3 /root/benchmarks/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --model resnet101 --batch_size 64 --variable_update horovod
 

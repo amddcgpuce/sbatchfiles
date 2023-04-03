@@ -58,7 +58,7 @@ fi
 
 
 module purge
-module load rocm-5.4.2
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/hpcg2-$$
 mkdir -p $tmp

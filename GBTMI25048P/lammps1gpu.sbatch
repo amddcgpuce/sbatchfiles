@@ -57,7 +57,7 @@ fi
 
 
 module purge
-module load rocm/5.4.2
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/gpu1-$$
 mkdir -p $tmp
