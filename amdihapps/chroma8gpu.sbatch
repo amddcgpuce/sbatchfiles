@@ -58,9 +58,7 @@ elif [[ $(echo $SLURM_JOB_PARTITION | grep -i rocky9) = *Rocky9* ]]; then
 fi
 
 module purge
-module load rocm-5.4.2/ucx-1.13.1/ompi/4.1.4
-
-tmp=/tmp/$USER/tmp-$$
+module load rocm-5.4.3
 mkdir -p $tmp
 
 # Copy the benchmark data to avoid using --writable-tmpfs
