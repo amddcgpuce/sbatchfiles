@@ -63,6 +63,6 @@ module load rocm-5.4.3
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/pytorch_rocm5.4.1_ubuntu20.04_py3.7_pytorch_1.12.1.sif python3 /var/lib/jenkins/pytorch-micro-benchmarking/micro_benchmarking_pytorch.py --network resnet50
+singularity run /shared/apps/bin/pytorch_rocm5.4_ubuntu20.04_py3.8_pytorch_1.12.1.sif python3 /var/lib/jenkins/pytorch-micro-benchmarking/micro_benchmarking_pytorch.py --network resnet50
 
 rm -rf $tmp
