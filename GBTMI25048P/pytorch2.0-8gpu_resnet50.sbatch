@@ -1,10 +1,11 @@
 #!/bin/bash
  
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=16
-#SBATCH --ntasks-per-node=1
-#SBATCH --mem=64GB
-#SBATCH --gres=gpu:1
+#SBATCH --ntasks-per-node=8
+#SBATCH --cpus-per-task=12
+#SBATCH --mem=0
+#SBATCH --gres=gpu:8
+
 #SBATCH -o %x-%N-%j.out
 #SBATCH -e %x-%N-%j.err
 
@@ -58,11 +59,11 @@ fi
 
 
 module purge
-module load rocm-5.4.2/ucx-1.13.1/ompi/4.1.4
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/pytorch_rocm5.4_ubuntu20.04_py3.8_pytorch_1.12.1.sif python3 /var/lib/jenkins/pytorch-micro-benchmarking/micro_benchmarking_pytorch.py --network resnet50
+singularity run /shared/apps/bin/pytorch_rocm5.4.1_ubuntu20.04_py3.7_pytorch_1.12.1.sif python3 /var/lib/jenkins/pytorch-micro-benchmarking/micro_benchmarking_pytorch.py --network resnet50 --batch-size 512 --iterations 1000  --dataparallel --device_ids 0,1,2,3,4,5,6,7
 
 rm -rf $tmp
