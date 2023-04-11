@@ -61,7 +61,7 @@ fi
 
 
 module purge
-module load rocm-5.4.2/ucx-1.13.1/ompi/4.1.4
+module load rocm-5.4.3
 module purge
 module load ompi/4.1.4
 module purge
