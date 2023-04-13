@@ -58,9 +58,9 @@ fi
 
 
 module purge
-module load rocm/5.4.2
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/rochpcg3.1.0_97.sif mpirun -np 3 hpcg 280 280 280 1860
+singularity run /shared/apps/bin/rochpcg_3.1.amd1_28.sif mpirun -np 3 hpcg 280 280 280 1860

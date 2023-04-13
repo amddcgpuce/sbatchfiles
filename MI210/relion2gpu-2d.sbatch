@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=64
-#SBATCH --cpus-per-task=2
+#SBATCH --ntasks-per-node=17
+#SBATCH --cpus-per-task=7
 #SBATCH --mem=128GB
 #SBATCH --gres=gpu:2
 #SBATCH -o %x-%N-%j.err
@@ -57,13 +57,13 @@ elif [[ $(echo $SLURM_JOB_PARTITION | grep -i rocky9) = *Rocky9* ]]; then
 fi
 
 
-module load rocm-5.4.0/ucx-1.13.1/ompi/4.1.4
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/gpu2-2d-$$
 mkdir -p $tmp
 
 #===== 2GPU, 2D Benchmark
-singularity run --bind /shareddata/relionv4/relion_benchmark:/dataset:ro --pwd /benchmark /shared/apps/bin/relion_4.0_25.sif run-benchmark --class 2d -g 2 -n 13 -j 1 -p 10 --iters 25 -i /dataset -o /tmp/$USER/gpu2-2d-$$
+singularity run --bind /shareddata/relionv4/relion_benchmark:/dataset:ro --pwd /benchmark /shared/apps/bin/relion_4.0_25.sif run-benchmark --class 2d -g 2 -n 17 -j 1 -p 10 --iters 25 -i /dataset -o /tmp/$USER/gpu2-2d-$$
 
 # Save logfile
 cp /tmp/$USER/gpu2-2d-$$/log.txt ${PWD}/log.txt-relion-gpu2-2d-$SLURM_JOB_NODELIST-$SLURM_JOB_ID

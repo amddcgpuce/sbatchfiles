@@ -58,20 +58,29 @@ fi
 
 
 module purge
-module load rocm-5.4.2/ucx-1.13.1/ompi/4.1.4
+module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
 singularity run /shared/apps/bin/namd3_3.0a9.sif cp -r /examples ./examples-$$
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 jac/jac.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 apoa1/apoa1.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1
+# jac benchmark run
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 jac/jac.namd +p1 +pemap 0 --CUDASOAintegrate on +devices 0 2>&1 | tee -a ./examples-$$/jac-gpu0.log &
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 jac/jac.namd +p1 +pemap 8 --CUDASOAintegrate on +devices 1 2>&1 | tee -a ./examples-$$/jac-gpu1.log
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 f1atpase/f1atpase.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1 
+# apoa1 benchmark run
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 apoa1/apoa1.namd +p1 +pemap 0 --CUDASOAintegrate on +devices 0 2>&1 | tee -a ./examples-$$/apoa1-gpu0.log &
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 apoa1/apoa1.namd +p1 +pemap 8 --CUDASOAintegrate on +devices 1 2>&1 | tee -a ./examples-$$/apoa1-gpu1.log
 
-singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 stmv/stmv.namd +p1 +setcpuaffinity --CUDASOAintegrate on +devices 0,1
+# f1atpase benchmark run
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 f1atpase/f1atpase.namd +p1 +pemap 0 --CUDASOAintegrate on +devices 0 2>&1 | tee -a ./examples-$$/f1atpase-gpu0.log &
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 f1atpase/f1atpase.namd +p1 +pemap 8 --CUDASOAintegrate on +devices 1 2>&1 | tee -a ./examples-$$/f1atpase-gpu1.log 
+
+# stmv benchmark run
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 stmv/stmv.namd +p1 +pemap 0 --CUDASOAintegrate on +devices 0 2>&1 | tee -a ./examples-$$/stmv-gpu0.log &
+singularity run --bind ./examples-$$:/examples-$$ --pwd /examples-$$ /shared/apps/bin/namd3_3.0a9.sif /opt/namd/bin/namd3 stmv/stmv.namd +p1 +pemap 8 --CUDASOAintegrate on +devices 1 2>&1 | tee -a ./examples-$$/stmv-gpu1.log
 
 cp -r ./examples-$$   $PWD/gpu2-$$-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 
