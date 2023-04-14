@@ -66,7 +66,7 @@ mkdir -p $tmp
 mkdir -p /tmp/$USER/gpu1-$$/adh_dodec
 singularity run /shared/apps/bin/gromacs_2022.3.amd1_174.sif tar -xvf /benchmarks/adh_dodec/adh_dodec.tar.gz -C /tmp/$USER/gpu1-$$/adh_dodec 1>/dev/null
 
-singularity run /shared/apps/bin/gromacs_2022.3.amd1_174.sif gmx mdrun -pin on -nsteps 100000 -resetstep 90000 -ntmpi 1 -ntomp 64 -noconfout -nb gpu -bonded gpu -pme gpu -v -nstlist 100 -gpu_id 0 -s /tmp/$USER/gpu1-$$/adh_dodec/topol.tpr -g /tmp/$USER/gpu1-$$/adh_dodec/md.log -e /tmp/$USER/gpu1-$$/adh_dodec/ener.eder -cpo /tmp/$USER/gpu1-$$/adh_dodec/state.cpt
+singularity run /shared/apps/bin/gromacs_2022.3.amd1_174.sif gmx mdrun -pin on -nsteps 100000 -resetstep 90000 -ntmpi 1 -ntomp 60 -noconfout -nb gpu -bonded gpu -pme gpu -v -nstlist 100 -gpu_id 0 -s /tmp/$USER/gpu1-$$/adh_dodec/topol.tpr -g /tmp/$USER/gpu1-$$/adh_dodec/md.log -e /tmp/$USER/gpu1-$$/adh_dodec/ener.eder -cpo /tmp/$USER/gpu1-$$/adh_dodec/state.cpt
 
 #===== CELLULOSE_NVE Benchmark, Threaded-MPI
 mkdir -p /tmp/$USER/gpu1-$$/cellulose_nve
