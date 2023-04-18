@@ -60,7 +60,6 @@ fi
 module load rocm-5.4.3
 
 tmp=/tmp/$USER/tmp-$$
-
 mkdir -p $tmp
 
 singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchmarks $tmp
@@ -68,14 +67,15 @@ singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchma
 # Run H2O-DFT-LS-NREP2 Test
 mkdir -p $tmp/H2O-DFT-LS-NREP2-8GPU-$$
 singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-8GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI250 --rank-stride 8 --omp-thread-count 8 --ranks 12 --gpu-count 8 --cpu-count 96 --output /tmp/H2O-DFT-LS-NREP2-8GPU
-cp -r $tmp/H2O-DFT-LS-NREP2-8GPU-$$ `pwd`/
+mkdir -p `pwd`/H2O-DFT-LS-NREP2-8GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
+cp $tmp/H2O-DFT-LS-NREP2-8GPU-$$/H2O-DFT-LS-NREP2* `pwd`/H2O-DFT-LS-NREP2-8GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 
 # Run 32-H2O-RPA test
 rm -rf $tmp/benchmarks/logs
 mkdir -p $tmp/32-H2O-RPA-8GPU-$$
 singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-8GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI250 --rank-stride 8 --omp-thread-count 8 --ranks 12 --gpu-count 8 --cpu-count 96 --output /tmp/32-H2O-RPA-8GPU
-
-cp -r $tmp/32-H2O-RPA-8GPU-$$ `pwd`/
+mkdir -p `pwd`/32-H2O-RPA-8GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
+cp $tmp/32-H2O-RPA-8GPU-$$/32-H2O-RPA* `pwd`/32-H2O-RPA-8GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
 
 # Cleanup the benchmark data which was copied
 rm -rf $tmp

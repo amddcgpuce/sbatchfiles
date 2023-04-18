@@ -1,10 +1,11 @@
 #!/bin/bash
-
+ 
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=8
 #SBATCH --cpus-per-task=12
-#SBATCH --mem=256GB
-#SBATCH --gres=gpu:4
+#SBATCH --mem=0
+#SBATCH --gres=gpu:8
+
 #SBATCH -o %x-%N-%j.out
 #SBATCH -e %x-%N-%j.err
 
@@ -63,20 +64,6 @@ module load rocm-5.4.3
 tmp=/tmp/$USER/tmp-$$
 mkdir -p $tmp
 
-singularity run /shared/apps/bin/cp2k:2022.2.amd3_76.sif cp -r /opt/cp2k/benchmarks $tmp
+singularity run /shared/apps/bin/pytorch_rocm5.4.1_ubuntu20.04_py3.7_pytorch_1.12.1.sif python3 /var/lib/jenkins/pytorch-micro-benchmarking/micro_benchmarking_pytorch.py --network resnet50 --batch-size 512 --iterations 1000  --dataparallel --device_ids 0,1,2,3,4,5,6,7
 
-# Run H2O-DFT-LS-NREP2 Test
-mkdir -p $tmp/H2O-DFT-LS-NREP2-4GPU-$$
-singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/H2O-DFT-LS-NREP2-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark H2O-DFT-LS-NREPS2 --arch VEGA90A --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 12 --gpu-count 4 --cpu-count 64 --output /tmp/H2O-DFT-LS-NREP2-4GPU
-mkdir -p `pwd`/H2O-DFT-LS-NREP2-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-cp $tmp/H2O-DFT-LS-NREP2-4GPU-$$/H2O-DFT-LS-NREP2* `pwd`/H2O-DFT-LS-NREP2-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-
-# Run 32-H2O-RPA test
-rm -rf $tmp/benchmarks/logs
-mkdir -p $tmp/32-H2O-RPA-4GPU-$$
-singularity run  --bind $tmp/benchmarks/:/opt/cp2k/benchmarks/ --bind $tmp/32-H2O-RPA-4GPU-$$:/tmp /shared/apps/bin/cp2k:2022.2.amd3_76.sif benchmark 32-H2O-RPA --arch VEGA90A  --gpu-type MI250 --rank-stride 4 --omp-thread-count 4 --ranks 12 --gpu-count 4 --cpu-count 64 --output /tmp/32-H2O-RPA-4GPU
-mkdir -p `pwd`/32-H2O-RPA-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-cp $tmp/32-H2O-RPA-4GPU-$$/32-H2O-RPA* `pwd`/32-H2O-RPA-4GPU-$SLURM_JOB_NODELIST-$SLURM_JOB_ID
-
-# Cleanup the benchmark data which was copied
 rm -rf $tmp
