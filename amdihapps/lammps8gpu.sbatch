@@ -72,7 +72,7 @@ singularity run --pwd /benchmark --writable-tmpfs /shared/apps/bin/lammps_2022.5
 
 singularity run --pwd /benchmark --writable-tmpfs /shared/apps/bin/lammps_2022.5.04_130.sif /opt/lammps/tpl/openmpi/bin/mpirun -np 8 /opt/lammps/bin/lmp -k on g 8 -sf kk -pk kokkos cuda/aware on neigh half comm device neigh/qeq full newton on -v x 48 -v y 48 -v z 48 -v steps 300 -in in.reaxc.hns -nocite -log /tmp/$USER/gpu8-$$/reaxff
 
-singularity run --pwd /benchmark --writable-tmpfs /shared/apps/bin/lammps_2022.5.04_130.sif /opt/lammps/tpl/openmpi/bin/mpirun -np 8 /opt/lammps/bin/lmp -k on g 8 -sf kk -pk kokkos cuda/aware on neigh half comm device neigh/qeq full newton on -v steps 400 -in in.snap.exaalt -nocite -log /tmp/$USER/gpu8-$$/snap
+singularity run --pwd /benchmark --writable-tmpfs /shared/apps/bin/lammps_2022.5.04_130.sif /opt/lammps/tpl/openmpi/bin/mpirun -np 8 /opt/lammps/bin/lmp -k on g 8 -sf kk -pk kokkos cuda/aware on neigh half comm device neigh/qeq full newton on -v x 23 -v y 23 -v x 23 -v steps 400 -in in.snap.exaalt -nocite -log /tmp/$USER/gpu8-$$/snap
 
 
 
